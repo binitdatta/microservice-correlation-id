@@ -1,0 +1,31 @@
+server:
+  port: 8083
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: client_to_server
+          uri: http://localhost:8082
+          predicates:
+            - Path=/server/aggregate/**
+          filters:
+            - RewritePath=/server/(?<remaining>.*), /${remaining}
+        - id: client_to_server_custom_object
+          uri: http://localhost:8082
+          predicates:
+            - Path=/server/aggregate/custom**
+          filters:
+            - RewritePath=/server/(?<remaining>.*), /${remaining}
+        - id: service_a_to_service_b
+          uri: http://localhost:5011
+          predicates:
+            - Path=/service-c/data/**
+          filters:
+            - RewritePath=/api/(?<remaining>.*), /${remaining}
+        - id: service_a_to_service_c
+          uri: http://localhost:5012
+          predicates:
+            - Path=/service-b/data/**
+          filters:
+            - RewritePath=/api/(?<remaining>.*), /${remaining}
